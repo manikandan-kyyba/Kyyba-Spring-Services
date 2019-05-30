@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties
 public class User {
+	
+	private int id;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -30,5 +32,13 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }
