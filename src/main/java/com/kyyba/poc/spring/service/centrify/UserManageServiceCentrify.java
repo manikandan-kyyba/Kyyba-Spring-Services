@@ -30,8 +30,12 @@ public class UserManageServiceCentrify {
 
 	@RequestMapping(value = UtilApp.API_END_PONIT, method = RequestMethod.POST)
 	public JSONObject createUsers() {
-		HttpHeaders headers = new HttpHeaders();
+		return getSessionMechanismId();
+	}
 
+	// get SessionId and MechanismId
+	private JSONObject getSessionMechanismId() {
+		HttpHeaders headers = new HttpHeaders();
 		// Request to return JSON format
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -42,14 +46,18 @@ public class UserManageServiceCentrify {
 		map.put("User", appProperties.getCentrify().getUser());
 		map.put("Version", appProperties.getCentrify().getVersion());
 
-		JSONObject jsonObject = new JSONObject(map);
-		
-		System.out.println(jsonObject);
-
-		HttpEntity<JSONObject> entity = new HttpEntity<>(jsonObject, headers);
+		HttpEntity<JSONObject> entity = new HttpEntity<>(new JSONObject(map), headers);
 
 		ResponseEntity<JSONObject> response = restTemplate.exchange(
 				UtilApp.API_BASE_URL + "/Security/StartAuthentication", HttpMethod.POST, entity, JSONObject.class);
-		return response.getBody();
+
+		JSONObject jsonObjectBody = response.getBody();
+		JSONObject jsonObjectReturn = null;
+
+		if (Boolean.parseBoolean(jsonObjectBody.get("success").toString())) {
+			//jsonObjectReturn = jsonObjectBody.get("Result");
+		}
+
+		return jsonObjectBody;
 	}
 }
