@@ -33,20 +33,42 @@ public class UserManageServiceCentrify {
 
 	private static String SessionId;
 	private static String MechanismId;
-
-	@RequestMapping(value = UtilApp.API_END_PONIT, method = RequestMethod.GET)
-	public JSONObject advanceAuthentication() {
+	
+	// User login path http://localhost:8080/centrify/user_login
+	@RequestMapping(value = UtilApp.API_END_PONIT_USER_LOGIN, method = RequestMethod.GET)
+	public JSONObject userLogin() {
 		HttpEntity<JSONObject> entity = new HttpEntity<>(new JSONObject(getSessionMechanismIds()), getHeaders());
 		ResponseEntity<JSONObject> response = restTemplate.exchange(
 				UtilApp.API_BASE_URL + "/Security/AdvanceAuthentication", HttpMethod.POST, entity, JSONObject.class);
 		JSONObject jsonObjectBody = response.getBody();
 		return jsonObjectBody;
 	}
+	
+	// User logout path http://localhost:8080/centrify/user_logout
+	@RequestMapping(value = UtilApp.API_END_PONIT_USER_LOGOUT, method = RequestMethod.GET)
+	public JSONObject userLogout() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("success", true);
+		map.put("Result", null);
+		map.put("Message", null);
+		map.put("MessageID", null);
+		map.put("Exception", null);
+		map.put("ErrorID", null);
+		map.put("ErrorCode", null);
+		map.put("InnerExceptions", null);
+		
+		HttpEntity<JSONObject> entity = new HttpEntity<>(new JSONObject(map), getHeaders());
+		
+		ResponseEntity<JSONObject> response = restTemplate.exchange(
+				UtilApp.API_BASE_URL + "/Security/logout", HttpMethod.POST, entity, JSONObject.class);
+		
+		return response.getBody();
+	}
 
 	// get SessionId and MechanismId
 	private Map<String, String> getSessionMechanismIds() {
 
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("TenantId", appProperties.getCentrify().getTenantId());
 		map.put("User", appProperties.getCentrify().getUser());
 		map.put("Version", appProperties.getCentrify().getVersion());
@@ -82,8 +104,7 @@ public class UserManageServiceCentrify {
 
 		}
 
-		Map<String, String> mapResult = new HashMap<String, String>();
-		
+		Map<String, String> mapResult = new HashMap<>();
 		mapResult.put("TenantId", appProperties.getCentrify().getTenantId());
 		mapResult.put("SessionId", SessionId);
 		mapResult.put("MechanismId", MechanismId);
