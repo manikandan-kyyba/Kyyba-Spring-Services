@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
+import com.google.gson.GsonBuilder;
 import com.kyyba.poc.spring.config.AppProperties;
 import com.kyyba.poc.spring.util.UtilApp;
 
@@ -28,13 +31,17 @@ public class UserManageServiceCentrify {
 	@Autowired(required = true)
 	private AppProperties appProperties;
 
-	@RequestMapping(value = UtilApp.API_END_PONIT, method = RequestMethod.POST)
+	private static String SessionId;
+	private static String MechanismId;
+
+	@RequestMapping(value = UtilApp.API_END_PONIT, method = RequestMethod.GET)
 	public JSONObject createUsers() {
-		return getSessionMechanismId();
+		return getSessionMechanismIds();
 	}
 
 	// get SessionId and MechanismId
-	private JSONObject getSessionMechanismId() {
+	@SuppressWarnings("unchecked")
+	private JSONObject getSessionMechanismIds() {
 		HttpHeaders headers = new HttpHeaders();
 		// Request to return JSON format
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
@@ -52,12 +59,56 @@ public class UserManageServiceCentrify {
 				UtilApp.API_BASE_URL + "/Security/StartAuthentication", HttpMethod.POST, entity, JSONObject.class);
 
 		JSONObject jsonObjectBody = response.getBody();
-		JSONObject jsonObjectReturn = null;
 
 		if (Boolean.parseBoolean(jsonObjectBody.get("success").toString())) {
-			//jsonObjectReturn = jsonObjectBody.get("Result");
+
+			JSONObject jsonObjectResult = JSONObjectParser(jsonObjectBody.get("Result"));
+
+			JSONArray jsonArrayChallenges = JSONArrayParser(jsonObjectResult.get("Challenges"));
+
+			for (Object object : jsonArrayChallenges) {
+				if (object instanceof JSONObject) {
+
+					JSONArray jsonArrayMechanisms = (JSONArray) ((JSONObject) object).get("Mechanisms");
+
+					for (Object objectSub : jsonArrayMechanisms) {
+						if (objectSub instanceof JSONObject) {
+							MechanismId = (String) ((JSONObject) objectSub).get("MechanismId");
+						}
+					}
+
+				}
+			}
+
+			SessionId = jsonObjectResult.get("SessionId").toString();
+
 		}
 
-		return jsonObjectBody;
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("TenantId", appProperties.getCentrify().getTenantId());
+		jsonObject.put("SessionId", SessionId);
+		jsonObject.put("MechanismId", MechanismId);
+		jsonObject.put("Action", "Answer");
+		jsonObject.put("Answer", appProperties.getCentrify().getPassword());
+
+		return jsonObject;
+	}
+
+	private JSONArray JSONArrayParser(Object object) {
+		try {
+			return (JSONArray) new JSONParser().parse(new GsonBuilder().create().toJson(object));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return new JSONArray();
+	}
+
+	private JSONObject JSONObjectParser(Object object) {
+		try {
+			return (JSONObject) new JSONParser().parse(new GsonBuilder().create().toJson(object));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return new JSONObject();
 	}
 }

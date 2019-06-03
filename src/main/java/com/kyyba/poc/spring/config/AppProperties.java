@@ -23,6 +23,8 @@ public class AppProperties {
 		@NotNull
 		private String user;
 		@NotNull
+		private String password;
+		@NotNull
 		private String version;
 
 		public String getTenantUrl() {
@@ -55,6 +57,14 @@ public class AppProperties {
 
 		public void setVersion(String version) {
 			this.version = version;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 	}
 
