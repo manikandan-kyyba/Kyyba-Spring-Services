@@ -35,25 +35,20 @@ public class UserManageServiceCentrify {
 	private static String MechanismId;
 
 	@RequestMapping(value = UtilApp.API_END_PONIT, method = RequestMethod.GET)
-	public JSONObject createUsers() {
+	public JSONObject advanceAuthentication() {
 		return getSessionMechanismIds();
 	}
 
 	// get SessionId and MechanismId
 	@SuppressWarnings("unchecked")
 	private JSONObject getSessionMechanismIds() {
-		HttpHeaders headers = new HttpHeaders();
-		// Request to return JSON format
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("X-CENTRIFY-NATIVE-CLIENT", "true");
 
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("TenantId", appProperties.getCentrify().getTenantId());
 		map.put("User", appProperties.getCentrify().getUser());
 		map.put("Version", appProperties.getCentrify().getVersion());
 
-		HttpEntity<JSONObject> entity = new HttpEntity<>(new JSONObject(map), headers);
+		HttpEntity<JSONObject> entity = new HttpEntity<>(new JSONObject(map), getHeaders());
 
 		ResponseEntity<JSONObject> response = restTemplate.exchange(
 				UtilApp.API_BASE_URL + "/Security/StartAuthentication", HttpMethod.POST, entity, JSONObject.class);
@@ -110,5 +105,13 @@ public class UserManageServiceCentrify {
 			e.printStackTrace();
 		}
 		return new JSONObject();
+	}
+
+	private HttpHeaders getHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("X-CENTRIFY-NATIVE-CLIENT", "true");
+		return headers;
 	}
 }
