@@ -8,5 +8,5 @@ public class UtilApp {
 	
 	private static final String CENTRIFY_API_END_VERSION = "/centrify";
 
-	public static final String API_END_PONIT = CENTRIFY_API_END_VERSION + "/users";
+	public static final String API_END_PONIT = CENTRIFY_API_END_VERSION + "/user_login";
 }

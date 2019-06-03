@@ -36,12 +36,15 @@ public class UserManageServiceCentrify {
 
 	@RequestMapping(value = UtilApp.API_END_PONIT, method = RequestMethod.GET)
 	public JSONObject advanceAuthentication() {
-		return getSessionMechanismIds();
+		HttpEntity<JSONObject> entity = new HttpEntity<>(new JSONObject(getSessionMechanismIds()), getHeaders());
+		ResponseEntity<JSONObject> response = restTemplate.exchange(
+				UtilApp.API_BASE_URL + "/Security/AdvanceAuthentication", HttpMethod.POST, entity, JSONObject.class);
+		JSONObject jsonObjectBody = response.getBody();
+		return jsonObjectBody;
 	}
 
 	// get SessionId and MechanismId
-	@SuppressWarnings("unchecked")
-	private JSONObject getSessionMechanismIds() {
+	private Map<String, String> getSessionMechanismIds() {
 
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("TenantId", appProperties.getCentrify().getTenantId());
@@ -79,14 +82,15 @@ public class UserManageServiceCentrify {
 
 		}
 
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("TenantId", appProperties.getCentrify().getTenantId());
-		jsonObject.put("SessionId", SessionId);
-		jsonObject.put("MechanismId", MechanismId);
-		jsonObject.put("Action", "Answer");
-		jsonObject.put("Answer", appProperties.getCentrify().getPassword());
+		Map<String, String> mapResult = new HashMap<String, String>();
+		
+		mapResult.put("TenantId", appProperties.getCentrify().getTenantId());
+		mapResult.put("SessionId", SessionId);
+		mapResult.put("MechanismId", MechanismId);
+		mapResult.put("Action", "Answer");
+		mapResult.put("Answer", appProperties.getCentrify().getPassword());
 
-		return jsonObject;
+		return mapResult;
 	}
 
 	private JSONArray JSONArrayParser(Object object) {
