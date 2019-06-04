@@ -18,21 +18,21 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.GsonBuilder;
 import com.kyyba.poc.spring.config.AppProperties;
 
-public class CentrifyUtilActionsUtil {
+public class CentrifyActionsUtil {
 
 	private static String SessionId;
 	private static String MechanismId;
 
 	public static JSONObject makeAction(String endPoint, RestTemplate restTemplate, AppProperties appProperties) {
-		CentrifyUtilActionsUtil centrifyUtilActionsUtil = new CentrifyUtilActionsUtil();
+		CentrifyActionsUtil centrifyActionsUtil = new CentrifyActionsUtil();
 		HttpEntity<JSONObject> entity = null;
 
 		switch (endPoint) {
 
 		case AppUtil.CENTRIFY_API_USER_LOGIN: {
 			entity = new HttpEntity<>(
-					new JSONObject(centrifyUtilActionsUtil.getSessionMechanismIds(restTemplate, appProperties)),
-					centrifyUtilActionsUtil.getHeaders());
+					new JSONObject(centrifyActionsUtil.getSessionMechanismIds(restTemplate, appProperties)),
+					centrifyActionsUtil.getHeaders());
 		}
 			break;
 
@@ -46,7 +46,7 @@ public class CentrifyUtilActionsUtil {
 			map.put("ErrorID", null);
 			map.put("ErrorCode", null);
 			map.put("InnerExceptions", null);
-			entity = new HttpEntity<>(new JSONObject(map), centrifyUtilActionsUtil.getHeaders());
+			entity = new HttpEntity<>(new JSONObject(map), centrifyActionsUtil.getHeaders());
 		}
 			break;
 
