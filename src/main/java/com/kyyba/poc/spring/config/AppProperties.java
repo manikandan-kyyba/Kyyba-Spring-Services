@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
-	
+
 	@Valid
 	private final Centrify centrify = new Centrify();
 
@@ -20,10 +20,6 @@ public class AppProperties {
 		private String tenantUrl;
 		@NotNull
 		private String tenantId;
-		@NotNull
-		private String user;
-		@NotNull
-		private String password;
 		@NotNull
 		private String version;
 
@@ -43,28 +39,12 @@ public class AppProperties {
 			this.tenantId = tenantId;
 		}
 
-		public String getUser() {
-			return user;
-		}
-
-		public void setUser(String user) {
-			this.user = user;
-		}
-
 		public String getVersion() {
 			return version;
 		}
 
 		public void setVersion(String version) {
 			this.version = version;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
 		}
 	}
 

@@ -17,13 +17,14 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.GsonBuilder;
 import com.kyyba.poc.spring.config.AppProperties;
+import com.kyyba.poc.spring.model.UserRequest;
 
 public class CentrifyActionsUtil {
 
 	private static String SessionId;
 	private static String MechanismId;
 
-	public static JSONObject makeAction(String endPoint, RestTemplate restTemplate, AppProperties appProperties) {
+	public static JSONObject makeAction(String endPoint, UserRequest userRequest, RestTemplate restTemplate, AppProperties appProperties) {
 		CentrifyActionsUtil centrifyActionsUtil = new CentrifyActionsUtil();
 		HttpEntity<JSONObject> entity = null;
 
@@ -31,7 +32,7 @@ public class CentrifyActionsUtil {
 
 		case AppUtil.CENTRIFY_API_USER_LOGIN: {
 			entity = new HttpEntity<>(
-					new JSONObject(centrifyActionsUtil.getSessionMechanismIds(restTemplate, appProperties)),
+					new JSONObject(centrifyActionsUtil.getSessionMechanismIds(userRequest, restTemplate, appProperties)),
 					centrifyActionsUtil.getHeaders());
 		}
 			break;
@@ -64,11 +65,11 @@ public class CentrifyActionsUtil {
 	}
 
 	// get SessionId and MechanismId
-	private Map<String, String> getSessionMechanismIds(RestTemplate restTemplate, AppProperties appProperties) {
+	private Map<String, String> getSessionMechanismIds(UserRequest userRequest,RestTemplate restTemplate, AppProperties appProperties) {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("TenantId", appProperties.getCentrify().getTenantId());
-		map.put("User", appProperties.getCentrify().getUser());
+		map.put("User", userRequest.getEmail());
 		map.put("Version", appProperties.getCentrify().getVersion());
 
 		HttpEntity<JSONObject> entity = new HttpEntity<>(new JSONObject(map), getHeaders());
@@ -107,7 +108,7 @@ public class CentrifyActionsUtil {
 		mapResult.put("SessionId", SessionId);
 		mapResult.put("MechanismId", MechanismId);
 		mapResult.put("Action", "Answer");
-		mapResult.put("Answer", appProperties.getCentrify().getPassword());
+		mapResult.put("Answer", userRequest.getPassword());
 
 		return mapResult;
 	}

@@ -1,5 +1,3 @@
-app.centrify.user=
-app.centrify.password=
-app.centrify.version=
 app.centrify.tenant-url=
 app.centrify.tenant-id=
+app.centrify.version=
