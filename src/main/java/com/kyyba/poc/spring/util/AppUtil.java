@@ -11,4 +11,6 @@ public class AppUtil {
 	
 	public static final String SWAGGER_API_END_POINT_USER_LOGIN = SWAGGER_API_PONIT_END_VERSION + "/login";
 	public static final String SWAGGER_API_END_POINT_USER_LOGOUT = SWAGGER_API_PONIT_END_VERSION + "/logout";
+	
+	public static String AUTH_TOKEN;
 }

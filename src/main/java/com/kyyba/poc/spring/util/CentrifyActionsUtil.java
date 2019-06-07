@@ -2,8 +2,10 @@ package com.kyyba.poc.spring.util;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,7 +26,10 @@ public class CentrifyActionsUtil {
 	private static String SessionId;
 	private static String MechanismId;
 
-	public static JSONObject makeAction(String endPoint, UserRequest userRequest, RestTemplate restTemplate, AppProperties appProperties) {
+	private static ResponseEntity<JSONObject> response;
+
+	public static JSONObject makeAction(String endPoint, UserRequest userRequest, RestTemplate restTemplate,
+			AppProperties appProperties) {
 		CentrifyActionsUtil centrifyActionsUtil = new CentrifyActionsUtil();
 		HttpEntity<JSONObject> entity = null;
 
@@ -32,8 +37,21 @@ public class CentrifyActionsUtil {
 
 		case AppUtil.CENTRIFY_API_USER_LOGIN: {
 			entity = new HttpEntity<>(
-					new JSONObject(centrifyActionsUtil.getSessionMechanismIds(userRequest, restTemplate, appProperties)),
+					new JSONObject(
+							centrifyActionsUtil.getSessionMechanismIds(userRequest, restTemplate, appProperties)),
 					centrifyActionsUtil.getHeaders());
+
+			response = restTemplate.exchange(endPoint, HttpMethod.POST, entity, JSONObject.class);
+
+			List<String> listCookies = response.getHeaders().get(HttpHeaders.SET_COOKIE);
+
+			for (String listCookie : listCookies) {
+				if (listCookie.contains(".ASPXAUTH")) {
+					AppUtil.AUTH_TOKEN = StringUtils.substringBetween(listCookie, ".ASPXAUTH=",
+							"; path=/; secure; HttpOnly");
+					break;
+				}
+			}
 		}
 			break;
 
@@ -48,6 +66,7 @@ public class CentrifyActionsUtil {
 			map.put("ErrorCode", null);
 			map.put("InnerExceptions", null);
 			entity = new HttpEntity<>(new JSONObject(map), centrifyActionsUtil.getHeaders());
+			response = restTemplate.exchange(endPoint, HttpMethod.POST, entity, JSONObject.class);
 		}
 			break;
 
@@ -57,15 +76,13 @@ public class CentrifyActionsUtil {
 
 		}
 
-		ResponseEntity<JSONObject> response = restTemplate.exchange(endPoint, HttpMethod.POST, entity,
-				JSONObject.class);
-
 		return response.getBody();
 
 	}
 
 	// get SessionId and MechanismId
-	private Map<String, String> getSessionMechanismIds(UserRequest userRequest,RestTemplate restTemplate, AppProperties appProperties) {
+	private Map<String, String> getSessionMechanismIds(UserRequest userRequest, RestTemplate restTemplate,
+			AppProperties appProperties) {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("TenantId", appProperties.getCentrify().getTenantId());
