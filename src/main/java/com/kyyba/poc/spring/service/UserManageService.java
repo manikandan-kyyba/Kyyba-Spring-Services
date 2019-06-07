@@ -28,6 +28,14 @@ public class UserManageService {
 		return CentrifyActionsUtil.makeAction(AppUtil.CENTRIFY_API_USER_LOGIN, userRequest, restTemplate,
 				appProperties);
 	}
+	
+	
+	// User Post Request for Login http://localhost:8080/register
+		@RequestMapping(value = AppUtil.SWAGGER_API_END_POINT_USER_REGISTER, method = RequestMethod.POST)
+		public JSONObject userRegister() {
+			return CentrifyActionsUtil.makeAction(AppUtil.CENTRIFY_API_USER_REGISTER, new UserRequest(), restTemplate,
+					appProperties);
+		}
 
 	// User Post Request for Logout http://localhost:8080/api/v1/logout
 	@RequestMapping(value = AppUtil.SWAGGER_API_END_POINT_USER_LOGOUT, method = RequestMethod.POST)

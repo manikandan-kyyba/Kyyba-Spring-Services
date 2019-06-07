@@ -32,6 +32,7 @@ public class CentrifyActionsUtil {
 			AppProperties appProperties) {
 		CentrifyActionsUtil centrifyActionsUtil = new CentrifyActionsUtil();
 		HttpEntity<JSONObject> entity = null;
+		AppUtil appUtil = AppUtil.getInstance();
 
 		switch (endPoint) {
 
@@ -47,7 +48,7 @@ public class CentrifyActionsUtil {
 
 			for (String listCookie : listCookies) {
 				if (listCookie.contains(".ASPXAUTH")) {
-					AppUtil.AUTH_TOKEN = StringUtils.substringBetween(listCookie, ".ASPXAUTH=",
+					appUtil.AUTH_TOKEN = StringUtils.substringBetween(listCookie, ".ASPXAUTH=",
 							"; path=/; secure; HttpOnly");
 					break;
 				}
@@ -67,6 +68,48 @@ public class CentrifyActionsUtil {
 			map.put("InnerExceptions", null);
 			entity = new HttpEntity<>(new JSONObject(map), centrifyActionsUtil.getHeaders());
 			response = restTemplate.exchange(endPoint, HttpMethod.POST, entity, JSONObject.class);
+		}
+			break;
+
+		case AppUtil.CENTRIFY_API_USER_REGISTER: {
+
+			if (appUtil.AUTH_TOKEN != null) {
+
+				System.out.println("appUtil.AUTH_TOKEN: " + appUtil.AUTH_TOKEN);
+
+				Map<String, Object> map = new HashMap<>();
+				map.put("Name", "test3@doccraft");
+				map.put("Mail", "mike11@somemail.com");
+				map.put("Password", "abcD1234");
+				map.put("InEverybodyRole", false);
+				map.put("InSysAdminRole", false);
+				map.put("ForcePasswordChangeNext", null);
+				map.put("SendEmailInvite", false);
+				map.put("SendSmsInvite", false);
+				map.put("MobileNumber", "987-654-3210");
+
+				HttpHeaders headers = new HttpHeaders();
+				headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				headers.set("X-CENTRIFY-NATIVE-CLIENT", "true");
+				headers.set("Authorization", "bearer " + appUtil.AUTH_TOKEN);
+
+				entity = new HttpEntity<>(new JSONObject(map), headers);
+
+				try {
+					response = restTemplate.exchange(endPoint, HttpMethod.POST, entity, JSONObject.class);
+				} catch (Exception e) {
+					Map<String, Object> map1 = new HashMap<>();
+					map.put("Aspx Auth", "can not be invalid");
+					map.put("error", e.getMessage());
+					return new JSONObject(map1);
+				}
+
+			} else {
+				Map<String, Object> map = new HashMap<>();
+				map.put("Aspx Auth", "can not be null");
+				return new JSONObject(map);
+			}
 		}
 			break;
 
