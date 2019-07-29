@@ -22,22 +22,22 @@ public class UserManageService {
 	@Autowired(required = true)
 	private AppProperties appProperties;
 
-	// User Post Request for Login http://localhost:8080/login {"user": "", "password": ""}
+	// User Post Request for Login http://localhost:8080/login {"user": "",
+	// "password": ""}
 	@RequestMapping(value = AppUtil.SWAGGER_API_END_POINT_USER_LOGIN, method = RequestMethod.POST)
 	public JSONObject userLogin(@RequestBody UserRequest userRequest) {
 		return CentrifyActionsUtil.makeAction(AppUtil.CENTRIFY_API_USER_LOGIN, userRequest, restTemplate,
 				appProperties);
 	}
-	
-	
-	// User Post Request for Login http://localhost:8080/register
-		@RequestMapping(value = AppUtil.SWAGGER_API_END_POINT_USER_REGISTER, method = RequestMethod.POST)
-		public JSONObject userRegister() {
-			return CentrifyActionsUtil.makeAction(AppUtil.CENTRIFY_API_USER_REGISTER, new UserRequest(), restTemplate,
-					appProperties);
-		}
 
-	// User Post Request for Logout http://localhost:8080/api/v1/logout
+	// User Post Request for Register http://localhost:8080/register
+	@RequestMapping(value = AppUtil.SWAGGER_API_END_POINT_USER_REGISTER, method = RequestMethod.POST)
+	public JSONObject userRegister() {
+		return CentrifyActionsUtil.makeAction(AppUtil.CENTRIFY_API_USER_REGISTER, new UserRequest(), restTemplate,
+				appProperties);
+	}
+
+	// User Post Request for Logout http://localhost:8080/logout
 	@RequestMapping(value = AppUtil.SWAGGER_API_END_POINT_USER_LOGOUT, method = RequestMethod.POST)
 	public JSONObject userLogout() {
 		return CentrifyActionsUtil.makeAction(AppUtil.CENTRIFY_API_USER_LOGOUT, new UserRequest(), restTemplate,

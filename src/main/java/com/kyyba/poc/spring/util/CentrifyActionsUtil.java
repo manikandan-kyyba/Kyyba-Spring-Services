@@ -1,11 +1,9 @@
 package com.kyyba.poc.spring.util;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -37,22 +35,35 @@ public class CentrifyActionsUtil {
 		switch (endPoint) {
 
 		case AppUtil.CENTRIFY_API_USER_LOGIN: {
-			entity = new HttpEntity<>(
-					new JSONObject(
-							centrifyActionsUtil.getSessionMechanismIds(userRequest, restTemplate, appProperties)),
-					centrifyActionsUtil.getHeaders());
 
-			response = restTemplate.exchange(endPoint, HttpMethod.POST, entity, JSONObject.class);
+//			entity = new HttpEntity<>(
+//					new JSONObject(
+//							centrifyActionsUtil.getSessionMechanismIds(userRequest, restTemplate, appProperties)),
+//					centrifyActionsUtil.getHeaders());
+//
+//			response = restTemplate.exchange(endPoint, HttpMethod.POST, entity, JSONObject.class);
 
-			List<String> listCookies = response.getHeaders().get(HttpHeaders.SET_COOKIE);
+			Map<String, String> map = new HashMap<>();
+			map.put("grant_type", "client_credentials");
 
-			for (String listCookie : listCookies) {
-				if (listCookie.contains(".ASPXAUTH")) {
-					appUtil.AUTH_TOKEN = StringUtils.substringBetween(listCookie, ".ASPXAUTH=",
-							"; path=/; secure; HttpOnly");
-					break;
-				}
-			}
+			String originalInput = appProperties.getCentrify().getAuthUser() + ":" + appProperties.getCentrify().getAuthPassword();
+
+			String encodedString = Base64.getEncoder().encodeToString(originalInput.getBytes());
+			 System.out.println(encodedString);
+
+			HttpHeaders headers = new HttpHeaders();
+			// headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			// headers.set("X-CENTRIFY-NATIVE-CLIENT", "true");
+			headers.set("Authorization", "Basic " + encodedString);
+			
+			// System.out.println(new JSONObject(map));
+
+			entity = new HttpEntity<>(new JSONObject(map), headers);
+
+			response = restTemplate.exchange("https://eotss-dev.my.centrify.com/oauth2/token/DTA_UserSelfService",
+					HttpMethod.POST, entity, JSONObject.class);
+
 		}
 			break;
 
@@ -83,7 +94,7 @@ public class CentrifyActionsUtil {
 				map.put("Password", "abcD1234");
 				map.put("InEverybodyRole", false);
 				map.put("InSysAdminRole", false);
-				map.put("ForcePasswordChangeNext", null);
+				map.put("ForcePasswordChangeNext", false);
 				map.put("SendEmailInvite", false);
 				map.put("SendSmsInvite", false);
 				map.put("MobileNumber", "987-654-3210");

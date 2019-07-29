@@ -19,6 +19,10 @@ public class AppProperties {
 		@NotNull
 		private String tenantUrl;
 		@NotNull
+		private String authUser;
+		@NotNull
+		private String authPassword;
+		@NotNull
 		private String tenantId;
 		@NotNull
 		private String version;
@@ -45,6 +49,22 @@ public class AppProperties {
 
 		public void setVersion(String version) {
 			this.version = version;
+		}
+
+		public String getAuthUser() {
+			return authUser;
+		}
+
+		public void setAuthUser(String authUser) {
+			this.authUser = authUser;
+		}
+
+		public String getAuthPassword() {
+			return authPassword;
+		}
+
+		public void setAuthPassword(String authPassword) {
+			this.authPassword = authPassword;
 		}
 	}
 

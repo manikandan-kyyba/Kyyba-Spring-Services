@@ -9,9 +9,7 @@ import com.kyyba.poc.spring.config.AppProperties;
 @SpringBootApplication
 @EnableConfigurationProperties(AppProperties.class)
 public class KyybaSpringServicesApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(KyybaSpringServicesApplication.class, args);
 	}
-
 }
